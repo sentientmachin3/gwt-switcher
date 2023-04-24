@@ -4,6 +4,8 @@ Git worktree fuzzy switcher written in Golang to learn it.
 This tool works for my needs to open a new worktree in a new tmux window or in the current one. 
 Yes, I have all the repos in one folder.
 
+**WARNING**: not perfectly working, use at your own risk, will update soon
+
 ## Usage
 Flags:
 - `-r` changes the repos root folder (default to `$HOME/repos`)
