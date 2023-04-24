@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	fzf "github.com/ktr0731/go-fuzzyfinder"
 	"io/ioutil"
 	"os"
+	"os/exec"
+
+	fzf "github.com/ktr0731/go-fuzzyfinder"
 )
 
 func main() {
@@ -30,8 +32,16 @@ func main() {
 
 	var names = worktree_names(rootFolderFlag, &repo_names)
 	var worktree_name_list = as_worktree_list(&names)
-	ff_select(&worktree_name_list)
+	var selected_wt = ff_select(&worktree_name_list)
 
+	var full_path = rootFolderFlag + "/" + selected_wt
+	if !sessionizeFlag {
+		fmt.Printf(full_path)
+		os.Exit(0)
+	} else {
+		cmd := exec.Command("tmux", "neww", "-n", selected_wt, "-c", full_path)
+		cmd.Run()
+	}
 }
 
 func repo_names(rootFolder string) []string {
