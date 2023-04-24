@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	fzf "github.com/ktr0731/go-fuzzyfinder"
 	"io/ioutil"
 	"os"
 )
@@ -28,6 +29,9 @@ func main() {
 	}
 
 	var names = worktree_names(rootFolderFlag, &repo_names)
+	var worktree_name_list = as_worktree_list(&names)
+	ff_select(&worktree_name_list)
+
 }
 
 func repo_names(rootFolder string) []string {
@@ -56,4 +60,21 @@ func worktree_names(rootFolder string, repo_names *[]string) map[string][]string
 		}
 	}
 	return worktree_names
+}
+
+func ff_select(paths *[]string) string {
+	idx, _ := fzf.Find(*paths, func(i int) string {
+		return (*paths)[i]
+	})
+	return (*paths)[idx]
+}
+
+func as_worktree_list(wt_map *map[string][]string) []string {
+	wt_list := make([]string, 0)
+	for repo, worktrees := range *wt_map {
+		for _, worktree := range worktrees {
+			wt_list = append(wt_list, repo+"/"+worktree)
+		}
+	}
+	return wt_list
 }
