@@ -11,6 +11,7 @@ import (
 
 func main() {
 	insideWorktree := InsideWorktree()
+	fmt.Printf("in worktree %v", insideWorktree)
 	basePath := "."
 	if insideWorktree {
 		basePath = ".."
