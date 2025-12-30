@@ -11,18 +11,32 @@ import (
 
 func main() {
 	insideWorktree := InsideWorktree()
-	fmt.Printf("in worktree %v", insideWorktree)
-	basePath := "."
+	isBare := false
 	if insideWorktree {
-		basePath = ".."
+		isBare = true
+		os.Chdir("..")
 	}
-	repo, err := git.PlainOpen(basePath)
+	repo, err := git.PlainOpen(".")
 	if err == git.ErrRepositoryNotExists {
 		fmt.Println("ERR: no .git directory detected")
 		os.Exit(1)
 	}
+	FetchRefs(repo)
 	refs := BranchNames(repo)
-	fuzzySelect(refs)
+	selected := fuzzySelect(refs)
+
+	if isBare {
+		// this library does not well support worktrees...?
+		AddWorktree(selected)
+	} else {
+		// checkout branch
+		worktree, _ := repo.Worktree()
+		err := worktree.Checkout(&git.CheckoutOptions{Branch: selected.Name()})
+		if err != nil {
+			fmt.Printf("ERR: unable to checkout worktree, %v", err)
+		}
+
+	}
 }
 
 func fuzzySelect(refs []*plumbing.Reference) *plumbing.Reference {
